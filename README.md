@@ -10,6 +10,13 @@ correction terms that must be applied to the observed microwave radiometer measu
 corrected TBs (*TB_offset_correction*.nc).
 
 
+Python requirements: tested with Python version 3.10.6
+- numpy: 1.21.5
+- xarray: 0.16.1
+- pandas: 1.3.5
+- matplotlib: 3.5.1
+
+
 Data prerequisites:
 - One file for each research flight containing all microwave radiometer measurements 
 	(all channels: K+V, 119+90, 183)
