@@ -5,16 +5,16 @@ brightness temperatures (TBs) in clear sky conditions. Information about executi
 package can be found below.
 
 The code package generates clear sky sonde comparison netCDF4 files for each research flight that
-shows the bias, RMSE and correlation (*TB_comparison*.nc). Afterwards, netCDF4 files containing the
+shows the bias, RMSE and correlation (\*TB_comparison\*.nc). Afterwards, netCDF4 files containing the
 correction terms that must be applied to the observed microwave radiometer measurements to obtain 
-corrected TBs (*TB_offset_correction*.nc).
+corrected TBs (\*TB_offset_correction\*.nc).
 
 
-Python requirements: tested with Python version 3.10.6
-- numpy: 1.21.5
-- xarray: 0.16.1
-- pandas: 1.3.5
-- matplotlib: 3.5.1
+*Python requirements*: tested with Python version **3.10.6**
+- numpy: **1.21.5**
+- xarray: **0.16.1**
+- pandas: **1.3.5**
+- matplotlib: **3.5.1**
 
 
 Data prerequisites:
