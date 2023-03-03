@@ -40,7 +40,7 @@ set_dict = {'sonde_dataset_type': "raw",		# dropsonde dataset type; options, see
 			'sonde_height_grid': np.arange(0.0, 16000.0001, 10.0),		# height grid in m
 			'sst_lat': [65, 82],		# lat boundaries of sst data (for download)
 			'sst_lon': [-30, 30],		# lon boundaries of sst data (for download)
-			'start_date': "2022-03-11",	# first date sst data should cover (for download), in yyyy-mm-dd
+			'start_date': "2022-03-11", # first date sst data should cover (for download), in yyyy-mm-dd
 			'end_date': "2022-04-14",	# last date sst data should cover (for download), in yyyy-mm-dd
 			}
 

@@ -190,7 +190,7 @@ class CSSC:
 						hole_size[k] = 0
 
 					elif np.isnan(temp_var[m+1] - temp_var[m]): # k shall only be incremented if an END of a hole has been identified:
-						if len(nan_idx) == 1: 	# must be handled seperately in case that merely one nan value exists in temp_var
+						if len(nan_idx) == 1:	# must be handled seperately in case that merely one nan value exists in temp_var
 							hole_size[k] = 1
 							break
 
@@ -205,7 +205,7 @@ class CSSC:
 								"middle of the dropsonde launch... Contact 'a.walbroel@uni-koeln.de'. \n")
 
 				# holes have been identified: edit the FIRST hole (editing depends on the size of the hole...)
-				c = 0 		# dummy variable needed for the right jumps in hole_size and nan_idx. c is used to address nan_idx and therefore new_var...
+				c = 0		# dummy variable needed for the right jumps in hole_size and nan_idx. c is used to address nan_idx and therefore new_var...
 
 				# meanwhile 'hs' just runs through the array hole_size:
 				for hs in hole_size:
@@ -435,10 +435,10 @@ class CSSC:
 			DSDS_new = DSDS_old
 
 			# thresholds are defined by change of meteorol. variable with altitude: e.g. delta p / delta z
-			thresholds = {'temp': 0.50, 	# K m-1
-							'pres': 40, 	# Pa m-1 
-							'rh': 2.5,  	# m-1
-							'u': 1,  		# m s-1 m-1
+			thresholds = {'temp': 0.50,		# K m-1
+							'pres': 40,		# Pa m-1 
+							'rh': 2.5,		# m-1
+							'u': 1,			# m s-1 m-1
 							'v': 1}			# m s-1 m-1]
 			dz = np.diff(DSDS_new.height.values) # delta z
 
@@ -519,7 +519,7 @@ class CSSC:
 		for j in range(n_sondes):
 
 			# limit datasets to the current sonde; BAH: average over +/- 5 sec of launch time:
-			self.DSDS_j = self.dropsondes.DS.isel(launch_time=j) 		# j-th dropsonde dataset
+			self.DSDS_j = self.dropsondes.DS.isel(launch_time=j)		# j-th dropsonde dataset
 			self.BAH_j = self.BAH.DS.sel(time=slice(self.DSDS_j.launch_time - np.timedelta64(5,"s"), 
 													self.DSDS_j.launch_time + np.timedelta64(5,"s")))
 
@@ -634,7 +634,7 @@ class CSSC:
 		the required dates.
 		"""
 
-		def better_ceil(input, digits):	# ceil to certain digit after decimal point
+		def better_ceil(input, digits): # ceil to certain digit after decimal point
 			return np.round(input + 0.49999999*10**(-digits), digits)
 
 		def better_floor(input, digits):# floor to certain digit after decimal point
@@ -683,7 +683,7 @@ class CSSC:
 				thisyear = str(dr.year)
 				date_formatted = dr.strftime("%Y%m%d")
 				lat_slice_formatted = f"{int(lat_slice[0])}:1:{int(lat_slice[1])}"	# e.g. 450:1:900
-				lon_slice_formatted = f"{int(lon_slice[0])}:1:{int(lon_slice[1])}" 	# e.g. 1140:1:1400
+				lon_slice_formatted = f"{int(lon_slice[0])}:1:{int(lon_slice[1])}"	# e.g. 1140:1:1400
 				daynumber = f"{daynumber:03}"
 
 				outfile_name = date_formatted + "120000-CMC-L4_GHRSST-SSTfnd-CMC0.1deg-GLOB-v02.0-fv03.0.nc.nc4"
@@ -701,7 +701,7 @@ class CSSC:
 					request.urlretrieve(to_be_retrieved, self.path_sst + outfile_name)
 
 
-				except:	# if it couldn't be downloaded continue with next day
+				except: # if it couldn't be downloaded continue with next day
 					print("Could not retrieve '" + to_be_retrieved + "' from server.")
 					continue
 
@@ -744,7 +744,7 @@ class CSSC:
 		for j in range(n_sondes):
 
 			# select respective dropsonde and SST data:
-			self.DSDS_j = self.DSDS.isel(launch_time=j) 		# j-th dropsonde dataset
+			self.DSDS_j = self.DSDS.isel(launch_time=j)			# j-th dropsonde dataset
 			self.SST_DS_j = self.SST_DS.sel(time=self.DSDS_j.launch_time, method='nearest')
 
 			# furthermore, limit dropsonde height to below flight altitude:
@@ -758,7 +758,7 @@ class CSSC:
 			# final check for nans:
 			if not (np.all([~np.isnan(self.DSDS_j.temp.values), ~np.isnan(self.DSDS_j.pres.values), ~np.isnan(self.DSDS_j.rh.values)])):
 				print('WARNING, nans detected in PAMTRA critical variable.')
-				print(f"    nan-counts (temp, pres, rh): {np.isnan(self.DSDS_j.temp).sum()}, " +
+				print(f"	nan-counts (temp, pres, rh): {np.isnan(self.DSDS_j.temp).sum()}, " +
 						f"{np.isnan(self.DSDS_j.pres).sum()}, {np.isnan(self.DSDS_j.rh).sum()}")
 				continue
 
@@ -832,7 +832,7 @@ class CSSC:
 			pamData['hgt_lev'] = np.broadcast_to(self.DSDS_j.height.values, shape3d)
 			pamData['temp_lev'] = np.broadcast_to(self.DSDS_j.temp.values, shape3d)		# in K
 			pamData['press_lev'] = np.broadcast_to(self.DSDS_j.pres.values, shape3d)	# in Pa
-			pamData['relhum_lev'] = np.broadcast_to(self.DSDS_j.rh.values, shape3d)		# in %
+			pamData['relhum_lev'] = np.broadcast_to(self.DSDS_j.rh.values*100.0, shape3d)	  # in %
 
 			# 4d variables: hydrometeors:
 			shape4d = [1, 1, n_alt-1, 1]			# potentially 5 hydrometeor classes with this setting
@@ -1072,7 +1072,7 @@ class CSSC:
 			TB_stat_DS['date'] = str(self.MWR_DS_j.time[0].dt.strftime("%Y%m%d").values)
 
 			# compute bias, rmse, correlation coeff, ... for clear sky scenes according to tb_used:
-			TB_stat_DS['tb_mean_cs'] = xr.where(TB_stat_DS.tb_used, TB_stat_DS.tb_mean, np.nan)	# clear sky tb_mean
+			TB_stat_DS['tb_mean_cs'] = xr.where(TB_stat_DS.tb_used, TB_stat_DS.tb_mean, np.nan) # clear sky tb_mean
 			TB_stat_DS['tb_std_cs'] = xr.where(TB_stat_DS.tb_used, TB_stat_DS.tb_std, np.nan)		# clear sky tb_std
 			TB_stat_DS['tb_sim_cs'] = xr.where(TB_stat_DS.tb_used, TB_stat_DS.tb_sim, np.nan)		# clear sky tb_sim
 			TB_stat_DS['bias'] = (TB_stat_DS.tb_mean_cs - TB_stat_DS.tb_sim_cs).mean('time')
@@ -1212,6 +1212,7 @@ class CSSC:
 		offsets_daily = xr.DataArray(np.nan, coords=[dates, TB_stat_DS.freq])
 		slopes_daily = xr.DataArray(np.nan, coords=[dates, TB_stat_DS.freq])
 		R_daily = xr.DataArray(np.nan, coords=[dates, TB_stat_DS.freq])
+		save_to_use_lin_fit = xr.DataArray(False, coords=[dates, TB_stat_DS.freq]) # indicates whether linear fit may be used
 
 		n_f_bias = 2		# number of sondes required to accept daily bias; if not surpassed, campaign-mean bias is used
 		for date, DS_date in TB_stat_DS_grouped:
@@ -1240,14 +1241,31 @@ class CSSC:
 				R_daily.loc[{'date': date, 'freq': freq}] = np.corrcoef(x_fit, y_fit)[0,1]
 
 
+				# It may occur that R is > 0.9 because of the low amount of sondes despite questionable applicability 
+				# of a linear fit. Therefore, also make sure that linear fit (slope, offset) is not used for 
+				# correction when the TBs show too little variance test 4 combinations to find the max. 2 
+				# dimensional TB distance: [(min_TBx,max_TBx), (min_TBx,max_TBy), (min_TBy, max_TBx), (min_TBy, max_TB_y)]
+				# with x: x_fit, y: y_fit
+				TB_dist_thres = 0.5		   # in K
+				i_minx, i_maxx = np.argmin(x_fit), np.argmax(x_fit)
+				i_miny, i_maxy = np.argmin(y_fit), np.argmax(y_fit)
+				TB_diffs = np.array([((x_fit[i_minx] - x_fit[i_maxx])**2 + (y_fit[i_minx] - y_fit[i_maxx])**2)**0.5, 
+									((x_fit[i_minx] - x_fit[i_maxy])**2 + (y_fit[i_minx] - y_fit[i_maxy])**2)**0.5, 
+									((x_fit[i_miny] - x_fit[i_maxx])**2 + (y_fit[i_miny] - y_fit[i_maxx])**2)**0.5, 
+									((x_fit[i_miny] - x_fit[i_maxy])**2 + (y_fit[i_miny] - y_fit[i_maxy])**2)**0.5])
+				save_to_use_lin_fit.loc[{'date':date, 'freq': freq}] = TB_diffs.max() > TB_dist_thres
+
+
 			# save the data in a dataset:
 			STAT_DS = xr.Dataset({'bias':		(['date', 'freq'], np.reshape(bias_daily.loc[{'date': date}].values, (1,self.n_freq)),
 												{'long_name': "Merged from daily_bias and mean_bias",
 												'units': "K"}),
-									'slope':	(['date', 'freq'], np.reshape(xr.where(R_daily.loc[{'date': date}] > 0.9, slopes_daily.loc[{'date': date}], 1.0).values, (1, self.n_freq)),
+									'slope':	(['date', 'freq'], np.reshape(xr.where((R_daily.loc[{'date': date}] > 0.9) & save_to_use_lin_fit.loc[{'date': date}], 
+																	slopes_daily.loc[{'date': date}], 1.0).values, (1, self.n_freq)),
 												{'long_name': "Slope of linear fit between simulated and measured TBs for high correlation",
 												'units': ""}),
-									'offset':	(['date', 'freq'], np.reshape(xr.where(R_daily.loc[{'date': date}] > 0.9, offsets_daily.loc[{'date': date}], -bias_daily.loc[{'date': date}]).values, (1, self.n_freq)),
+									'offset':	(['date', 'freq'], np.reshape(xr.where((R_daily.loc[{'date': date}] > 0.9) & save_to_use_lin_fit.loc[{'date': date}], 
+																	offsets_daily.loc[{'date': date}], -bias_daily.loc[{'date': date}]).values, (1, self.n_freq)),
 												{'long_name': "Offset of linear fit between simulated and measured TBs for high correlation",
 												'units': "K"}),
 									'mean_bias': (['freq'], bias_mean.values,
@@ -1259,11 +1277,15 @@ class CSSC:
 									'daily_slope':	(['date', 'freq'], np.reshape(slopes_daily.loc[{'date': date}].values, (1, self.n_freq)),
 												{'long_name': "Unfiltered slope of linear fit between simulated and measured TBs",
 												'units': ""}),
-									'daily_offset':	(['date', 'freq'], np.reshape(offsets_daily.loc[{'date': date}].values, (1, self.n_freq)),
+									'daily_offset': (['date', 'freq'], np.reshape(offsets_daily.loc[{'date': date}].values, (1, self.n_freq)),
 												{'long_name': "Unfiltered offset of linear fit between simulated and measured TBs",
 												'units': "K"}),
 									'daily_R':	(['date', 'freq'], np.reshape(R_daily.loc[{'date': date}].values, (1, self.n_freq)),
 												{'long_name': "Pearson correlation coefficient between observed and simulated TBs"}),
+									'TB_diff_flag': (['date', 'freq'], np.reshape(save_to_use_lin_fit.loc[{'date': date}].values, (1, self.n_freq)),
+												{'long_name': "Flag of two-dimensional euclidean TB distance",
+												'description': ("Flag indicating whether max. two-dimensional euclidean distance of TBs is sufficient " +
+																f"for linear fit (> {TB_dist_thres:.3f} K)")}),
 									'N':		(['date', 'freq'], np.reshape(N_daily.loc[{'date': date}].values, (1, self.n_freq)),
 												{'long_name': "Number of sondes available for bias computation",
 												'units': ""}),
@@ -1278,7 +1300,8 @@ class CSSC:
 								"correction without linear correction (corrected_tb = tb - bias). ")
 			lin_fit_descript = ("Use slope and offset to apply a correction that is either linear or offset only (i.e., slope==1.): " +
 								"corrected_tb = slope * tb + offset . True linear correction is provided if correlation " +
-								"between observed and synthetic BT is high (R > 0.9).")
+								"between observed and synthetic BT is high (R > 0.9) and if there a certain difference between the " +
+								f"minimum and maximum TB (2D-euclidean distance > {TB_dist_thres:.3f} K)")
 			STAT_DS['bias'].attrs['description'] = bias_description
 			STAT_DS['slope'].attrs['description'] = lin_fit_descript
 			STAT_DS['offset'].attrs['description'] = lin_fit_descript
@@ -1331,7 +1354,7 @@ class CSSC:
 		f1, a1 = plt.subplots(ncols=7, nrows=4, figsize=(15,9), constrained_layout=True)
 
 		a1 = a1.flatten()
-		for k in range(self.n_freq, len(a1)): a1[k].axis('off')	# these subplots are not needed
+		for k in range(self.n_freq, len(a1)): a1[k].axis('off') # these subplots are not needed
 
 
 		# axis limits:
@@ -1366,7 +1389,7 @@ class CSSC:
 				a = m_fit[0]
 				b = m_fit[1]
 
-				ds_fit = a1[k].plot(abs_lims, a*abs_lims + b, color=(0,0,0), linewidth=0.75, label="Best fit")
+				ds_fit = a1[k].plot(abs_lims, a*abs_lims + b, color=(0,0,0), linewidth=0.75, label="Linear fit")
 
 			# plot a line for orientation which would represent a perfect fit:
 			a1[k].plot(abs_lims, abs_lims, color=(0,0,0), linestyle='dashed', linewidth=0.75, alpha=0.5, 
@@ -1398,7 +1421,7 @@ class CSSC:
 		# legend, colorbar
 		lh, ll = a1[-2].get_legend_handles_labels()
 		a1[-2].legend(lh, ll, loc='upper center', bbox_to_anchor=(0.5, 1.00), fontsize=fs_dwarf,
-				framealpha=0.5, title="YYYY-MM-DD, #sondes")
+				framealpha=0.5, title=f"{dt.datetime.strptime(str(TB_stat_DS['date'].values), '%Y%m%d').strftime('%Y-%m-%d')}")
 
 		
 		# set further properties:
@@ -1472,7 +1495,7 @@ class CSSC:
 		f1, a1 = plt.subplots(ncols=7, nrows=4, figsize=(15,9), constrained_layout=True)
 
 		a1 = a1.flatten()
-		for k in range(self.n_freq, len(a1)): a1[k].axis('off')	# these subplots are not needed
+		for k in range(self.n_freq, len(a1)): a1[k].axis('off') # these subplots are not needed
 
 
 		# axis limits:

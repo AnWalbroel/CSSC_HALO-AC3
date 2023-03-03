@@ -69,7 +69,7 @@ class dropsondes:
 		if dataset_type == 'raw':
 
 			# dictionary to change variable names: (also filters for relevant variables)
-			translator_dict = {	'launch_time': 'launch_time',
+			translator_dict = { 'launch_time': 'launch_time',
 								'time': 'time',
 								'pres': 'pres',
 								'tdry': 'temp',
@@ -214,7 +214,7 @@ class dropsondes:
 			self.wspeed = vars_ip['wspd']
 			self.wdir = vars_ip['wdir']
 			self.lat = vars_ip['lat']
-			self.lon =  vars_ip['lon']
+			self.lon =	vars_ip['lon']
 
 
 			# build new dataset with (launch_time, height) grid:
@@ -271,7 +271,7 @@ class BAHAMAS:
 			# Identify correct time:
 			files = [file for file in sorted(glob.glob(path + "*.nc")) if which_date in file]
 
-			if len(files) == 1:	# then the file is unambiguous
+			if len(files) == 1: # then the file is unambiguous
 				files = files[0]
 
 			elif len(files) == 0:
@@ -304,7 +304,7 @@ class BAHAMAS:
 			else:
 				files = [file for file in sorted(glob.glob(path + "*.nc")) if which_date in file]
 
-				if len(files) == 1:	# then the file is unambiguous
+				if len(files) == 1: # then the file is unambiguous
 					files = files[0]
 
 				elif len(files) == 0:
@@ -360,7 +360,7 @@ class BAHAMAS:
 				path += f"/HALO-AC3_HALO_BAHAMAS_{which_date}_{RF_dict[which_date]}/"
 				files = [file for file in sorted(glob.glob(path + "*BAHAMAS*.nc")) if which_date in file]
 
-				if len(files) == 1:	# then the file is unambiguous
+				if len(files) == 1: # then the file is unambiguous
 					files = files[0]
 
 				elif len(files) == 0:
