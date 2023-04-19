@@ -61,6 +61,7 @@ class CSSC:
 		self.path_sst = path_data['sst']
 		self.path_dropsonde_sim = path_data['dropsonde_sim']
 		self.path_cssc_output = path_data['cssc_output']
+		self.dtime = 10		# time window in seconds for overlap between HAMP data and dropsonde launches (+/- dtime)
 
 		# plot path and other settings:
 		for key in set_dict.keys(): self.__dict__[key] = set_dict[key]
@@ -341,7 +342,6 @@ class CSSC:
 			"""
 
 			new_DS = old_DS
-			# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # alt = DS.height.values['Z']
 			new_ipflag_dict = old_ipflag_dict
 			launch_time = str(new_DS.launch_time.dt.strftime("%Y-%m-%d %H:%M:%S").values)
 
@@ -518,7 +518,7 @@ class CSSC:
 		n_sondes = self.dropsondes.n_sondes
 		for j in range(n_sondes):
 
-			# limit datasets to the current sonde; BAH: average over +/- 5 sec of launch time:
+			# limit datasets to the current sonde; BAH: average over i.e., +/- 5 sec of launch time:
 			self.DSDS_j = self.dropsondes.DS.isel(launch_time=j)		# j-th dropsonde dataset
 			self.BAH_j = self.BAH.DS.sel(time=slice(self.DSDS_j.launch_time - np.timedelta64(5,"s"), 
 													self.DSDS_j.launch_time + np.timedelta64(5,"s")))
@@ -956,7 +956,7 @@ class CSSC:
 				def cut_time(DS):
 		
 					# filter for time close to dropsonde launches:
-					idx_temp = [np.where(np.abs(DS.time.values - lt) < np.timedelta64(10, "s"))[0] for lt in launch_times_npdt]
+					idx_temp = [np.where(np.abs(DS.time.values - lt) < np.timedelta64(self.dtime, "s"))[0] for lt in launch_times_npdt]
 					idx = np.array([])
 					for ii in idx_temp: idx = np.concatenate((idx, ii))
 					idx = idx.astype('int64')
@@ -995,7 +995,7 @@ class CSSC:
 				# count bins with radar reflectivity > -40 dBZ for a time step (watch for ground clutter):
 				RADAR_DS['cloudy_flag'] = xr.where((RADAR_DS.dBZ > -40.0) & (RADAR_DS.height > 300.0), True, False)
 				RADAR_DS['refl_bins_count'] = RADAR_DS['cloudy_flag'].sum("range")
-				idx_radar = [np.where(np.abs(RADAR_DS.time.values - lt) < np.timedelta64(10, "s"))[0] for lt in self.PAM_DS_j.time.values]
+				idx_radar = [np.where(np.abs(RADAR_DS.time.values - lt) < np.timedelta64(self.dtime, "s"))[0] for lt in self.PAM_DS_j.time.values]
 
 				# time-averaged number of reflective bins for each dropsonde launch:
 				avg_refl_bins_count = np.ones((n_sondes,))*9999
@@ -1011,7 +1011,7 @@ class CSSC:
 
 
 			# mean and std dev of MWR TBs around dropsonde launches:
-			idx = [np.where(np.abs(self.MWR_DS_j.time.values - lt) < np.timedelta64(10, "s"))[0] for lt in self.PAM_DS_j.time.values]
+			idx = [np.where(np.abs(self.MWR_DS_j.time.values - lt) < np.timedelta64(self.dtime, "s"))[0] for lt in self.PAM_DS_j.time.values]
 			tb_mean = np.zeros((n_sondes, self.n_freq))
 			tb_std = np.zeros((n_sondes, self.n_freq))
 			for k, ii in enumerate(idx):
@@ -1045,6 +1045,33 @@ class CSSC:
 
 				# set tb_used to False, if radar sees anything within window
 				if radar_cloudy_flag[k]: tb_used[k,:] = False
+
+				######### BLOCK FOR MANUAL FLAGGING BASED ON VISUAL INSPECTION (radar data, MWR TBs, SPECMACS images):
+				if np.abs(self.PAM_DS_j.datatime.values[k] - np.datetime64("2022-03-13T16:01:59")) < np.timedelta64(2, "s"):
+					tb_used[k,:] = False
+				elif np.abs(self.PAM_DS_j.datatime.values[k] - np.datetime64('2022-03-14T15:30:58')) < np.timedelta64(2, "s"):
+					tb_used[k,:] = False
+				elif np.abs(self.PAM_DS_j.datatime.values[k] - np.datetime64('2022-03-16T10:46:57')) < np.timedelta64(2, "s"):
+					tb_used[k,:] = False
+				elif np.abs(self.PAM_DS_j.datatime.values[k] - np.datetime64('2022-03-28T13:27:34')) < np.timedelta64(2, "s"):
+					tb_used[k,:] = False
+				elif np.abs(self.PAM_DS_j.datatime.values[k] - np.datetime64('2022-03-28T11:10:56')) < np.timedelta64(2, "s"):
+					tb_used[k,:] = True
+				elif np.abs(self.PAM_DS_j.datatime.values[k] - np.datetime64('2022-03-30T11:15:10')) < np.timedelta64(2, "s"):
+					tb_used[k,:] = False
+				elif np.abs(self.PAM_DS_j.datatime.values[k] - np.datetime64('2022-03-30T11:19:38')) < np.timedelta64(2, "s"):
+					tb_used[k,:] = False
+				elif np.abs(self.PAM_DS_j.datatime.values[k] - np.datetime64('2022-03-30T11:42:40')) < np.timedelta64(2, "s"):
+					tb_used[k,:] = False
+				elif np.abs(self.PAM_DS_j.datatime.values[k] - np.datetime64('2022-03-30T11:46:31')) < np.timedelta64(2, "s"):
+					tb_used[k,:] = False
+				elif np.abs(self.PAM_DS_j.datatime.values[k] - np.datetime64('2022-04-08T08:30:47')) < np.timedelta64(2, "s"):
+					tb_used[k,:] = False
+				elif np.abs(self.PAM_DS_j.datatime.values[k] - np.datetime64('2022-04-10T10:40:38')) < np.timedelta64(2, "s"):
+					tb_used[k,:] = False
+				elif np.abs(self.PAM_DS_j.datatime.values[k] - np.datetime64('2022-03-21T15:18:42')) < np.timedelta64(2, "s"):
+					tb_used[k,:] = True
+				
 
 			# remove cases with extreme bias: considered cloudy (or sea ice) if the bias_threshold is exceeded
 			bias_threshold = 30.0
@@ -1082,7 +1109,7 @@ class CSSC:
 
 
 			# Give attributes:
-			vars_descr = {	'tb_mean': "TBs measured by microwave radiometer HAMP, averaged over 10 sec around dropsonde launches",
+			vars_descr = {	'tb_mean': f"TBs measured by microwave radiometer HAMP, averaged over {float(self.dtime):.1f} sec around dropsonde launches",
 							'tb_std': "As tb_mean, but with standard deviation",
 							'tb_sim': "TBs simulated with PAMTRA based on dropsonde data without hydrometeors and over ocean",
 							'tb_used': "Flag indicating whether TB comparison should be applied or not. If True, clear sky and ready for comparison.",
@@ -1214,10 +1241,16 @@ class CSSC:
 		R_daily = xr.DataArray(np.nan, coords=[dates, TB_stat_DS.freq])
 		save_to_use_lin_fit = xr.DataArray(False, coords=[dates, TB_stat_DS.freq]) # indicates whether linear fit may be used
 
-		n_f_bias = 2		# number of sondes required to accept daily bias; if not surpassed, campaign-mean bias is used
+		n_f_bias = 1		# number of sondes required to accept daily bias; if not surpassed, campaign-mean bias is used
+		n_f_fit = 5			# number of sondes required to accept linear fit; if not surpassen, use bias instead
 		for date, DS_date in TB_stat_DS_grouped:
 			# use the daily bias if sufficient sondes were available, otherwise, use the mean bias)
-			bias_daily.loc[{'date': date}] = xr.where(N_daily.loc[{'date': date}] > n_f_bias, DS_date.bias.isel(time=DS_date.date==date)[0], bias_mean)
+			bias_daily.loc[{'date': date}] = xr.where(N_daily.loc[{'date': date}] >= n_f_bias, 
+														DS_date.bias.isel(time=DS_date.date==date)[0], bias_mean)
+
+			if np.count_nonzero(N_daily.loc[{'date': date}] < n_f_bias) > 0: # then more than 1 frequency has got less than n_f_bias clear sky dropsondes
+				print(f"{date} : {np.count_nonzero(N_daily.loc[{'date': date}] < n_f_bias)} number of freqs do not have " +
+						"sufficient clear sky dropsondes available. Take campaign mean bias.")
 
 			# for each frequency (and each date), compute offset, slope, R:
 			for freq, DS_freq_date in DS_date.groupby('freq'):
@@ -1253,7 +1286,11 @@ class CSSC:
 									((x_fit[i_minx] - x_fit[i_maxy])**2 + (y_fit[i_minx] - y_fit[i_maxy])**2)**0.5, 
 									((x_fit[i_miny] - x_fit[i_maxx])**2 + (y_fit[i_miny] - y_fit[i_maxx])**2)**0.5, 
 									((x_fit[i_miny] - x_fit[i_maxy])**2 + (y_fit[i_miny] - y_fit[i_maxy])**2)**0.5])
-				save_to_use_lin_fit.loc[{'date':date, 'freq': freq}] = TB_diffs.max() > TB_dist_thres
+				save_to_use_lin_fit.loc[{'date': date, 'freq': freq}] = TB_diffs.max() > TB_dist_thres
+
+				# also check if more than n_f_fit sondes are available for the fit:
+				if mask.sum() < n_f_fit:
+					save_to_use_lin_fit.loc[{'date': date, 'freq': freq}] = False
 
 
 			# save the data in a dataset:
@@ -1301,7 +1338,8 @@ class CSSC:
 			lin_fit_descript = ("Use slope and offset to apply a correction that is either linear or offset only (i.e., slope==1.): " +
 								"corrected_tb = slope * tb + offset . True linear correction is provided if correlation " +
 								"between observed and synthetic BT is high (R > 0.9) and if there a certain difference between the " +
-								f"minimum and maximum TB (2D-euclidean distance > {TB_dist_thres:.3f} K)")
+								f"minimum and maximum TB (2D-euclidean distance > {TB_dist_thres:.3f} K). Also more than {n_f_fit} " +
+								"clear sky dropsondes must be available.")
 			STAT_DS['bias'].attrs['description'] = bias_description
 			STAT_DS['slope'].attrs['description'] = lin_fit_descript
 			STAT_DS['offset'].attrs['description'] = lin_fit_descript
@@ -1313,6 +1351,7 @@ class CSSC:
 										"comparisons between PAMTRA-simulated dropsondes and HAMP microwave radiometer observation")
 			STAT_DS.attrs['author'] = ("Andreas Walbroel (a.walbroel@uni-koeln.de), Institute for Geophysics and Meteorology, " +
 											"University of Cologne, Cologne, Germany")
+			STAT_DS.attrs['usage_notes'] = "The author advises to simply use slope and offset for the TB correction."
 			STAT_DS.attrs['python_version'] = f"python version: {sys.version}"
 			STAT_DS.attrs['python_packages'] = (f"numpy: {np.__version__}, xarray: {xr.__version__}, " +
 													f"pandas: {pd.__version__}, matplotlib: {mpl.__version__}")
@@ -1404,8 +1443,8 @@ class CSSC:
 						fontsize=fs_dwarf, ha='left', va='top', transform=a1[k].transAxes)
 
 		# add aux info for non plotted axis:
-		le_string_1 = break_str_into_lines("Error bars are the std. of all TB measurements from 10 s before " +
-											"to 10 s after the drop.", n_max=30)
+		le_string_1 = break_str_into_lines(f"Error bars are the std. of all TB measurements from {float(self.dtime):.1f} s before " +
+											f"to {float(self.dtime):.1f} s after the drop.", n_max=30)
 		le_string_2 = break_str_into_lines("The bias is calculated from all drops for clear " +
 											"sky scenes (see output netCDF file).", n_max=30)
 		le_string_3 = break_str_into_lines(r"bias = TB$_{MWR}$ - TB$_{PAMTRA}$", n_max=35)
@@ -1522,7 +1561,7 @@ class CSSC:
 			tbs = STAT_DS_freq.offset + STAT_DS_freq.slope*limits
 			ax.plot(tbs.transpose('time', 'date'), limits, linewidth=0.5)
 
-			# plot linear corrected TBs:
+			# plot linear corrected OR offset (slope==1) corrected TBs, depending on which works best:
 			ax.plot(TB_stat_DS_freq.tb_sim_cs, STAT_DS_freq_date.slope * TB_stat_DS_freq.tb_mean_cs + STAT_DS_freq_date.offset,
 					'o', markerfacecolor='none', linewidth=0.5)
 
