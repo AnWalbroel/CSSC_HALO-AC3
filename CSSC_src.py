@@ -1242,7 +1242,7 @@ class CSSC:
 		save_to_use_lin_fit = xr.DataArray(False, coords=[dates, TB_stat_DS.freq]) # indicates whether linear fit may be used
 
 		n_f_bias = 1		# number of sondes required to accept daily bias; if not surpassed, campaign-mean bias is used
-		n_f_fit = 5			# number of sondes required to accept linear fit; if not surpassen, use bias instead
+		n_f_fit = 5			# number of sondes required to accept linear fit; if not surpassed, use bias instead
 		for date, DS_date in TB_stat_DS_grouped:
 			# use the daily bias if sufficient sondes were available, otherwise, use the mean bias)
 			bias_daily.loc[{'date': date}] = xr.where(N_daily.loc[{'date': date}] >= n_f_bias, 
