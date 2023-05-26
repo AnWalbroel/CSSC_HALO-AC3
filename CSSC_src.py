@@ -782,8 +782,6 @@ class CSSC:
 			# create pamtra object; change settings:
 			pam = pyPamtra.pyPamtra()
 
-			pam.nmlSet['hydro_adaptive_grid'] = True
-			pam.nmlSet['add_obs_height_to_layer'] = False		# adds observation layer height to simulation height vector
 			pam.nmlSet['passive'] = True						# passive simulation
 			pam.nmlSet['active'] = False						# False: no radar simulation
 
@@ -811,9 +809,10 @@ class CSSC:
 
 			# surface type & reflectivity:
 			pamData['sfc_type'] = np.zeros(shape2d)			# 0: ocean, 1: land
+			pamData['sfc_model'] = np.zeros(shape2d)
 			pamData['sfc_refl'] = np.chararray(shape2d)
 			pamData['sfc_refl'][:] = 'F'
-			pamData['sfc_refl'][pamData['sfc_type'] == 1] = 'S'
+			pamData['sfc_refl'][pamData['sfc_type'] == 1] = 'S'		# specular for land; lambertian "L" for ice
 
 
 			# meteorolog. surface information:
