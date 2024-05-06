@@ -117,5 +117,4 @@ Set settings in the dictionary `set_dict`:
 	`TB_comparison` by plotting corrected TB measurements in relation to simulated TBs in a 
 	scatter plot.
 	
-	
-Contact: a.walbroel@uni-koeln.de
+
