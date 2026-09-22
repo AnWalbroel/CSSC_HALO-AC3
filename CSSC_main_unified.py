@@ -13,36 +13,36 @@ from CSSC_src import CSSC
 os.environ['OPENBLAS_NUM_THREADS'] = "1" # workaround for pamtra and openblas, required if PAMTRA was compiled with multithreadding version of openBLAS
 
 '''
-	This is the control room for the Clear Sky Sonde Comparison (CSSC) code package where
-	you assign the required variables (mostly paths of data).
-	More information about each to be manually assigned variable can be found in
-	'README.md'.
+    This is the control room for the Clear Sky Sonde Comparison (CSSC) code package where
+    you assign the required variables (mostly paths of data).
+    More information about each to be manually assigned variable can be found in
+    'README.md'.
 
-	This version of main uses unified MWR data and JOANNE drop sonde data
+    This version of main uses unified MWR data and JOANNE drop sonde data
 '''
 
 
 # Define paths:
-path_data = {	'BAH': "/data/obs/campaigns/halo-ac3/halo/BAHAMAS/unified/",	# BAHAMAS data path
-				'mwr_concat': "/net/blanc/awalbroe/Data/HALO_AC3/HALO/HAMP/unified/", # This is the unified MWR data
-				'radar': "/data/obs/campaigns/ac3airborne/ac3cloud_server/halo-ac3/halo/hamp_mira/",	# RADAR data path; OPTIONAL
-				'dropsonde': "/data/obs/campaigns/ac3airborne/ac3cloud_server/halo-ac3/halo/dropsondes/",
-				'dropsonde_rep': "/net/blanc/awalbroe/Data/HALO_AC3/HALO/dropsondes/gap_filled/", # repaired dropsonde path
-				'sst': "/net/blanc/awalbroe/Data/HALO_AC3/sst_slice/", # SST data path (data is downloaded here)
-				'dropsonde_sim': "/net/blanc/awalbroe/Data/HALO_AC3/HALO/dropsondes/fwd_sim_dropsondes/",  # output path of pamtra
-				'cssc_output': "/net/blanc/awalbroe/Data/HALO_AC3/HALO/CSSC/",		# output for sonde - mwr comparison
-			}
+path_data = {   'BAH': "/data/obs/campaigns/halo-ac3/halo/BAHAMAS/unified/",    # BAHAMAS data path
+                'mwr_concat': "/net/blanc/awalbroe/Data/HALO_AC3/HALO/HAMP/unified/", # This is the unified MWR data
+                'radar': "/data/obs/campaigns/ac3airborne/ac3cloud_server/halo-ac3/halo/hamp_mira/",    # RADAR data path; OPTIONAL
+                'dropsonde': "/data/obs/campaigns/ac3airborne/ac3cloud_server/halo-ac3/halo/dropsondes/",
+                'dropsonde_rep': "/net/blanc/awalbroe/Data/HALO_AC3/HALO/dropsondes/gap_filled/", # repaired dropsonde path
+                'sst': "/net/blanc/awalbroe/Data/HALO_AC3/sst_slice/", # SST data path (data is downloaded here)
+                'dropsonde_sim': "/net/blanc/awalbroe/Data/HALO_AC3/HALO/dropsondes/fwd_sim_dropsondes/",  # output path of pamtra
+                'cssc_output': "/net/blanc/awalbroe/Data/HALO_AC3/HALO/CSSC/",      # output for sonde - mwr comparison
+            }
 path_plot = "/net/blanc/awalbroe/Plots/HALO_AC3/CSSC/"
 
 
 # dictionary of settings to control CSSC:
-set_dict = {'sonde_dataset_type': "raw",		# dropsonde dataset type; options, see README
-			'sonde_height_grid': np.arange(0.0, 16000.0001, 10.0),		# height grid in m
-			'sst_lat': [65, 82],		# lat boundaries of sst data (for download)
-			'sst_lon': [-30, 30],		# lon boundaries of sst data (for download)
-			'start_date': "2022-03-11", # first date sst data should cover (for download), in yyyy-mm-dd
-			'end_date': "2022-04-14",	# last date sst data should cover (for download), in yyyy-mm-dd
-			}
+set_dict = {'sonde_dataset_type': "raw",        # dropsonde dataset type; options, see README
+            'sonde_height_grid': np.arange(0.0, 16000.0001, 10.0),      # height grid in m
+            'sst_lat': [65, 82],        # lat boundaries of sst data (for download)
+            'sst_lon': [-30, 30],       # lon boundaries of sst data (for download)
+            'start_date': "2022-03-11", # first date sst data should cover (for download), in yyyy-mm-dd
+            'end_date': "2022-04-14",   # last date sst data should cover (for download), in yyyy-mm-dd
+            }
 
 
 # initialise CSSC:
